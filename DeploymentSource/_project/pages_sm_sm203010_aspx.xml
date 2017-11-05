@@ -1,0 +1,86 @@
+﻿<Page path="~/pages/sm/sm203010.aspx" ControlId="5" pageSource="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">
+    <PXTabItem Text="General Info" ParentId="phF_tab_Items#0" TypeFullName="PX.Web.UI.PXTabItem">
+        <Children Key="Template">
+            <AddItem>
+                <PXLayoutRule TypeFullName="PX.Web.UI.PXLayoutRule">
+                    <Prop Key="Virtual:ApplyStylesheetSkin" />
+                    <Prop Key="ID" Value="CstSSLayoutRule1" />
+                    <Prop Key="GroupCaption" Value="Smartsheet Settings" />
+                    <Prop Key="LabelsWidth" Value="S" />
+                    <Prop Key="ControlSize" Value="SM" />
+                    <Prop Key="StartGroup" Value="False" />
+                    <Prop Key="StartColumn" Value="True" />
+                </PXLayoutRule>
+            </AddItem>
+            <AddItem>
+                <PXButton TypeFullName="PX.Web.UI.PXButton">
+                    <Prop Key="Virtual:ApplyStylesheetSkin" />
+                    <Prop Key="ID" Value="CstSSButton" />
+                    <Prop Key="Text" Value="Get Smartsheet Token" />
+                    <Prop Key="Width" Value="215px" />
+                    <Prop Key="CommandSourceID" Value="ds" />
+                    <Prop Key="CommandName" Value="RequestSSToken" />
+                    <Prop Key="AlignLeft" Value="True" />
+                </PXButton>
+            </AddItem>
+            <AddItem>
+                <PXTextEdit TypeFullName="PX.Web.UI.PXTextEdit">
+                    <Prop Key="Virtual:ApplyStylesheetSkin" />
+                    <Prop Key="ID" Value="CstPXTextEdit3" />
+                    <Prop Key="DataField" Value="UsrSmartSheetStatus" />
+                    <Prop Key="SuppressLabel" Value="True" />
+                </PXTextEdit>
+            </AddItem>
+        </Children>
+    </PXTabItem>
+    <DynamicDataSource ID="ds" ParentId="phDS_ds" TypeFullName="PX.Web.Controls.DynamicDataSource">
+        <Children Key="CallbackCommands">
+            <AddItem>
+                <PXDSCallbackCommand TypeFullName="PX.Web.UI.PXDSCallbackCommand">
+                    <Prop Key="CommitChanges" Value="True" />
+                    <Prop Key="Name" Value="RequestSSToken" />
+                    <Prop Key="Visible" Value="false" />
+                </PXDSCallbackCommand>
+            </AddItem>
+        </Children>
+    </DynamicDataSource>
+    <Content ID="cont1" ParentId="phDS" TypeFullName="System.Web.UI.WebControls.Content">
+        <Children Key="Controls">
+            <AddItem>
+                <PXLiteral TypeFullName="PX.Web.UI.PXLiteral">
+                    <Prop Key="Virtual:ApplyStylesheetSkin" />
+                    <Prop Key="Text" Value="#CDATA">
+                        <CDATA name="Value"><![CDATA[ 
+        <script src="../../Scripts/jquery-1.6.4.js" type="text/javascript"></script>
+        <script src="../../Scripts/jquery.signalR-2.2.1.js" type="text/javascript"></script>
+        <script src="../../signalr/hubs" type="text/javascript"></script>
+        <script type="text/javascript">
+            function reloadScreen() {
+                var ds = __px_cm(window).findDataSource();
+                if (ds) {
+                    ds.executeCallback(ds.cancelCommandName);
+                }
+            }
+            $(function () {
+                $(document)
+                    .ready(function () {
+                        var chat = $.connection.refreshHub;
+                        chat.client.refreshPage = function () {
+                            reloadScreen();
+                        }
+                        $.connection.hub.start()
+                            .done(function () {
+                                window.console.log("refreshHub connection started");
+                            });
+                    });
+            });
+        </script>
+  ]]></CDATA>
+                    </Prop>
+                    <Prop Key="ID" Value="cstPXLScripts" />
+                </PXLiteral>
+            </AddItem>
+            <DynamicDataSource ID="ds" OriginalIndex="0" />
+        </Children>
+    </Content>
+</Page>

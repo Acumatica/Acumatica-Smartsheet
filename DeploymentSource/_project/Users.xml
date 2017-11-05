@@ -1,0 +1,4 @@
+﻿<Table TableName="Users">
+    <Column TableName="Users" ColumnName="UsrSmartsheetToken" ColumnType="string" AllowNull="True" MaxLength="150" DecimalPrecision="2" DecimalLength="150" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="Users" ColumnName="UsrSmartsheetRefreshToken" ColumnType="string" AllowNull="True" MaxLength="150" DecimalPrecision="2" DecimalLength="150" IsNewColumn="True" IsUnicode="True" />
+</Table>

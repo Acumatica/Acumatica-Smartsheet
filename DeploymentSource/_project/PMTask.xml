@@ -1,0 +1,4 @@
+﻿<Table TableName="PMTask">
+    <Column TableName="PMTask" ColumnName="UsrSmartsheetTaskID" ColumnType="bigint" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="PMTask" ColumnName="UsrEnableSubtaskDependency" ColumnType="bool" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
+</Table>
