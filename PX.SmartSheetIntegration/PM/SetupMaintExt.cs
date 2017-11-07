@@ -20,8 +20,8 @@ namespace PX.SmartSheetIntegration
             if (pmSetupSSExtRow.UsrSmartsheetClientID != null
                     && String.IsNullOrEmpty(pmSetupSSExtRow.UsrDefaultRateTableID))
             {
-                sender.RaiseExceptionHandling<PMSetupSSExt.usrDefaultRateTableID>(pmSetupRow, null, new PXSetPropertyException(ErrorMessages.FieldIsEmpty, PXErrorLevel.Error));
-                e.Cancel = true;
+                throw new PXRowPersistingException(typeof(PMSetupSSExt.usrDefaultRateTableID).Name, null,
+                                                          ErrorMessages.FieldIsEmpty);
             }
         }
         #endregion

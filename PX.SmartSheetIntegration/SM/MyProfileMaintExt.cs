@@ -29,7 +29,7 @@ namespace PX.SmartSheetIntegration
         {
             PMSetup pmSetupRow = PXSelect<PMSetup>.Select(Base);
             PMSetupSSExt pmSetupSSExtRow = PXCache<PMSetup>.GetExtension<PMSetupSSExt>(pmSetupRow);
-            string loginScopeCompany = PXDatabase.Companies.Length > 0 ? Base.Accessinfo.CompanyName : String.Empty;
+            string loginScopeCompany = PXDatabase.Companies.Length > 0 ? PXAccess.GetCompanyName() : String.Empty;
             string currentScope = String.Format(",{0},{1}", Base.Accessinfo.UserName, loginScopeCompany);
             if (pmSetupSSExtRow != null && pmSetupSSExtRow.UsrSmartsheetClientID != null)
             {
