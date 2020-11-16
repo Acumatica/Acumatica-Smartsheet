@@ -1,6 +1,6 @@
 ﻿using PX.Common;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public static class SmartsheetConstants
     {
@@ -13,7 +13,14 @@ namespace PX.SmartSheetIntegration
             public const string ACTIVE = "A";
             public const string AMPERSAND = "&";
             public const string PIPE = "|";
-            public const string EXPIRED_TOKEN_MESSAGE = "expired";
+            public const string EXPIRED_TOKEN_MESSAGE = "Token Expired";
+            public const string NOTFOUND_PROJECT_MESSAGE = "Not Found";
+            public const string YEAR = "Y";
+            public const string DAY = "D";
+            public const string MONTH = "M";
+            public const string LABEL_YEAR = "Year";
+            public const string LABEL_DAY = "Day";
+            public const string LABEL_MONTH = "Month";
         }
         #endregion
 
@@ -23,8 +30,15 @@ namespace PX.SmartSheetIntegration
         {
             public const string PREFIX = "Smartsheet Integration";
             public const string SYNC_SMARTSHEET_PROJECT = "Sync Smartsheet Project";
+            public const string UNLINK_SMARTSHEET_PROJECT = "Unlink Smartsheet Project";
+            public const string SYNC_SMARTSHEET_EMPLOYEES= "Sync SmartSheet Employees";
+            public const string POPULATE_DATES= "Populate Dates";
             public const string REQUEST_SS_TOKEN = "Get Smartsheet Token";
             public const string REFRESH_SS_TOKEN = "Refresh Smartsheet Token";
+            public const string EMPLOYEE_USER_SMARTSHEET = "Refresh SmartSheet Users";
+            public const string LOAD_TEMPLATE_SMARTSHEET = "Load Smartsheet Templates";
+            public const string LOAD_TEMPLATE_COLUMNS_SMARTSHEET = "Load Template Columns";
+            
         }
         #endregion
 
@@ -42,6 +56,21 @@ namespace PX.SmartSheetIntegration
             public const string SS_CONNECTED = "Connected";
             public const string SS_DISCONNECTED = "Disconnected";
             public const string SMARTSHEET_INVALID_RESPONSE = "Response is not valid";
+            public const string DEFAULT_TEMPLATE = "A Smartsheet Template must be assigned to the Project";
+            public const string CONFIRM_RELOAD_VALUES = "There is a Smartsheet mapping available. Do you want to reload the values? (this will override the current content)";
+            public const string CONFIRM_UNLINK_PROJECT = "The current Project does not exist in Smartsheet. Do you want to create and sync this Project?";
+            public const string UNLINK_PROJECT = "The Project does not exist in SmartSheet";
+            public const string CONFIRM_HEADER = "Confirmation";
+            public const string NAME_PROJECT_TEMP_SMARTSHEET = "Smartsheet Template column";
+            public const string ERROR_SETUP = "Error getting the setup fields";
+            public const string ERROR_USER = "The user cannot be found";
+            public const string ERROR_USEREXT = "Required fields for the connection in the user table cannot be null";
+            public const string ERROR_CONTACT = "The employee {0} cannot be found in the Contacts table";
+            public const string ERROR_DAYS = "Days cannot be negative";
+            public const string ERROR_TEMPLATE_DEFAULT = "The template cannot be used by default because it does not have a mapping available";
+            public const string DURATION_FIELDS_NOT_INDICATED = "Duration fields are not assigned in Projects Preferences";
+
+
         }
         #endregion
 
@@ -51,6 +80,17 @@ namespace PX.SmartSheetIntegration
         {
             public const string PREFIX = "Smartsheet Integration";
             public const string PMSUBTASK = "Project Template Subtasks";
+            public const string PMTEMPLATELIST = "PMTemplateListSS";
+            public const string PMMAPPING = "PMSSMapping";
+            public const string EPUSERSLISTSS = "EPUsersListSS";
+        }
+        #endregion
+
+        #region TableNames
+        [PXLocalizable(Messages.PREFIX)]
+        public static class ViewName
+        {
+            public const string TASK = "Tasks";
         }
         #endregion
 
@@ -58,32 +98,11 @@ namespace PX.SmartSheetIntegration
         [PXLocalizable(ColumnMapping.PREFIX)]
         public static class ColumnMapping
         {
+            public const string TASKS_CD = "TaskCD";
             public const string PREFIX = "Smartsheet Integration";
-            public const string TASK_ID = "Task ID";
-            public const string START_DATE = "Start Date";
-            public const string END_DATE = "End Date";
+            public const string START_DATE = "StartDate";
             public const string DURATION = "Duration";
-            public const string PCT_COMPLETE = "% Complete";
-            public const string DESCRIPTION = "Description";
-            public const string ASSIGNED_TO = "Assigned To";
-            public const string PREDECESSORS = "Predecessors";
-        }
-        #endregion
-
-        #region GanttTemplateMapping
-        [PXLocalizable(GanttTemplateMapping.PREFIX)]
-        public static class GanttTemplateMapping
-        {
-            public const string PREFIX = "Smartsheet Integration";
-            public const string TASK_NAME = "Task Name";
-            public const string START = "Start";
-            public const string FINISH = "Finish";
-            public const string DURATION = "Duration";
-            public const string PCT_COMPLETE = "% Complete";
-            public const string ASSIGNED_TO = "Assigned To";
-            public const string COMMENTS = "Comments";
-            public const string PREDECESSORS = "Predecessors";
-            public const string STATUS = "Status";
+            public const string PCT_COMPLETE = "CompletedPercent";
         }
         #endregion
 
@@ -104,7 +123,7 @@ namespace PX.SmartSheetIntegration
             public const string ENDPOINT = "https://app.smartsheet.com/b/authorize?";
             public const string RESPONSE_TYPE = "response_type=code";
             public const string CLIENT_ID = "&client_id=";
-            public const string SCOPE = "&scope=ADMIN_SHEETS,ADMIN_WORKSPACES,CREATE_SHEETS,READ_SHEETS,WRITE_SHEETS";
+            public const string SCOPE = "&scope=ADMIN_SHEETS,ADMIN_WORKSPACES,ADMIN_USERS,CREATE_SHEETS,READ_SHEETS,READ_USERS,WRITE_SHEETS, DELETE_SHEETS";
             public const string STATE = "&state=ACUMATICA";
         }
         #endregion

@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.Objects.PM;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class TemplateTaskMaintExt : PXGraphExtension<TemplateTaskMaint>
     {

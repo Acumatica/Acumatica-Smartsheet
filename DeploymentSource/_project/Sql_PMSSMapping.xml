@@ -1,0 +1,22 @@
+<Sql TableName="PMSSMapping" TableSchemaXml="#CDATA">
+    <CDATA name="TableSchemaXml"><![CDATA[<table name="PMSSMapping">
+<col name="CompanyID" type="Int" default="Zero" />
+<col name="TemplateSS" type="NVarChar(20)" />
+<col name="CellSSID" type="Int" />
+<col name="NameSS" type="NVarChar(255)" />
+<col name="NameAcu" type="NVarChar(255)" nullable="true" />
+<col name="CellFormat" type="NVarChar(255)" nullable="true" />
+<col name="tstamp" type="Timestamp" />
+<col name="CreatedByID" type="UniqueIdentifier" />
+<col name="CreatedByScreenID" type="Char(8)" />
+<col name="CreatedDateTime" type="DateTime" />
+<col name="LastModifiedByID" type="UniqueIdentifier" />
+<col name="LastModifiedByScreenID" type="Char(8)" />
+<col name="LastModifiedDateTime" type="DateTime" />
+<index name="PMSSMapping_PK" clustered="true" primary="true" unique="true">
+<col name="CompanyID" />
+<col name="TemplateSS" />
+<col name="CellSSID" />
+</index>
+</table>]]></CDATA>
+</Sql>

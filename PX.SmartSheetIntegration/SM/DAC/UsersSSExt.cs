@@ -1,7 +1,8 @@
 ﻿using PX.Data;
+using PX.Data.BQL;
 using PX.SM;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class UsersSSExt : PXCacheExtension<Users>
     {
@@ -34,12 +35,12 @@ namespace PX.SmartSheetIntegration
         #endregion
     }
 
-    public class SSConnected : Constant<string>
+    public class SSConnected : BqlType<IBqlString, string>.Constant<SSConnected>
     {
         public SSConnected() : base(SmartsheetConstants.Messages.SS_CONNECTED) { }
     }
 
-    public class SSDisConnected : Constant<string>
+    public class SSDisConnected : BqlType<IBqlString, string>.Constant<SSDisConnected>
     {
         public SSDisConnected() : base(SmartsheetConstants.Messages.SS_DISCONNECTED) { }
     }

@@ -2,7 +2,7 @@
 using PX.Objects.PM;
 using System;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     [System.SerializableAttribute()]
     [PXCacheName(SmartsheetConstants.TableNames.PMSUBTASK)]
@@ -47,15 +47,6 @@ namespace PX.SmartSheetIntegration
         [PXDBString(250, IsUnicode = true)]
         [PXUIField(DisplayName = "Description")]
         public virtual string Description { get; set; }
-        #endregion
-        #region Duration
-        public abstract class duration : PX.Data.IBqlField
-        {
-        }
-        [PXUIField(DisplayName = "Duration (in days)")]
-        [PXDefault(1)]
-        [PXDBInt(MinValue = 1)]
-        public virtual int? Duration { get; set; }
         #endregion
         #region Position
         public abstract class position : PX.Data.IBqlField

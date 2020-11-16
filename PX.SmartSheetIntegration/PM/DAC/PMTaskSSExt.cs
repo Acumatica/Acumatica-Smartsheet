@@ -2,7 +2,7 @@
 using PX.Objects.PM;
 using System;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class PMTaskSSExt : PXCacheExtension<PMTask>
     {
@@ -23,6 +23,13 @@ namespace PX.SmartSheetIntegration
         [PXUIField(DisplayName = "Enable Subtask Dependency")]
         [PXDefault(false, PersistingCheck = PXPersistingCheck.Nothing)]
         public virtual Boolean? UsrEnableSubtaskDependency { get; set; }
+        #endregion
+
+        #region Duration
+        public abstract class duration : PX.Data.BQL.BqlInt.Field<duration> { }
+        [PXInt(MinValue = 1)]
+        [PXFormula(typeof(DiffDateSmartSheet<PMTask.startDate, PMTask.endDate>))]
+        public virtual int? Duration { get; set; }
         #endregion
     }
 }

@@ -1,25 +1,24 @@
 ﻿<Sql TableName="PMSubTask" TableSchemaXml="#CDATA">
-    <CDATA name="TableSchemaXml"><![CDATA[<table name="PMSubTask">
-  <col name="CompanyID" type="Int" default="Zero" />
-  <col name="ProjectID" type="Int" />
-  <col name="TaskID" type="Int" />
-  <col name="SubTaskCD" type="NVarChar(30)" />
-  <col name="Description" type="NVarChar(250)" nullable="true" />
-  <col name="Duration" type="Int" />
-  <col name="Position" type="Int" />
-  <col name="tstamp" type="Timestamp" />
-  <col name="CreatedByID" type="UniqueIdentifier" />
-  <col name="CreatedByScreenID" type="Char(8)" />
-  <col name="CreatedDateTime" type="DateTime" />
-  <col name="LastModifiedByID" type="UniqueIdentifier" />
-  <col name="LastModifiedByScreenID" type="Char(8)" />
-  <col name="LastModifiedDateTime" type="DateTime" />
-  <col name="NoteID" type="UniqueIdentifier" nullable="true" />
-  <index name="PMSubTask_PK" clustered="true" primary="true" unique="true">
-    <col name="CompanyID" />
-    <col name="ProjectID" />
-    <col name="TaskID" />
-    <col name="SubTaskCD" />
-  </index>
+      <CDATA name="TableSchemaXml"><![CDATA[<table name="PMSubTask">
+<col name="CompanyID" type="Int" default="Zero" />
+<col name="ProjectID" type="Int" />
+<col name="TaskID" type="Int" />
+<col name="SubTaskCD" type="NVarChar(30)" />
+<col name="Description" type="NVarChar(250)" nullable="true" />
+<col name="Position" type="Int" />
+<col name="tstamp" type="Timestamp" />
+<col name="CreatedByID" type="UniqueIdentifier" />
+<col name="CreatedByScreenID" type="Char(8)" />
+<col name="CreatedDateTime" type="DateTime" />
+<col name="LastModifiedByID" type="UniqueIdentifier" />
+<col name="LastModifiedByScreenID" type="Char(8)" />
+<col name="LastModifiedDateTime" type="DateTime" />
+<col name="NoteID" type="UniqueIdentifier" nullable="true" />
+<index name="PMSubTask_PK" clustered="true" primary="true" unique="true">
+  <col name="CompanyID" />
+  <col name="ProjectID" />
+  <col name="TaskID" />
+  <col name="SubTaskCD" />
+</index>
 </table>]]></CDATA>
-</Sql>
+  </Sql>

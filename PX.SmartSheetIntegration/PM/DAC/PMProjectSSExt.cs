@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.Objects.PM;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class PMProjectSSExt : PXCacheExtension<PMProject>
     {
@@ -14,6 +14,17 @@ namespace PX.SmartSheetIntegration
         public virtual long? UsrSmartsheetContractID { get; set; }
         #endregion
 
+        #region TemplateSS
+        public abstract class usrTemplateSS : PX.Data.BQL.BqlString.Field<usrTemplateSS> 
+        {
+        }
+        [PXDBString(20, IsUnicode = true)]
+        [PXDefault(typeof(PMSetupSSExt.usrSSTemplate), PersistingCheck = PXPersistingCheck.Nothing)]
+        [PXStringList()]
+        [PXUIField(DisplayName = "Template SmartSheet")]
+        public virtual string UsrTemplateSS { get; set; }
+        #endregion
+
         #region Unbounded Fields
 
         #region Selected
@@ -24,6 +35,7 @@ namespace PX.SmartSheetIntegration
         [PXUIField(DisplayName = "Selected")]
         public virtual bool? Selected { get; set; }
         #endregion
+
         #region SyncedInSmartsheet
         public abstract class syncedInSmartsheet : IBqlField
         {
@@ -32,6 +44,7 @@ namespace PX.SmartSheetIntegration
         [PXUIField(DisplayName = "Synced in Smartsheet", Enabled = false)]
         public virtual bool? SyncedInSmartsheet { get; set; }
         #endregion
+
         #endregion
     }
 }

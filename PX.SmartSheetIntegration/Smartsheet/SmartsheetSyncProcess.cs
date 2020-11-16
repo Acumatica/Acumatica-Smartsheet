@@ -1,7 +1,8 @@
 using PX.Data;
 using PX.Objects.PM;
+using Smartsheet.Api;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class SmartsheetSyncProcess : PXGraph<SmartsheetSyncProcess>
     {
@@ -19,7 +20,9 @@ namespace PX.SmartSheetIntegration
             {
                 graph.Clear();
                 ProjectEntryExt projectEntryExtGraph = graph.GetExtension<ProjectEntryExt>();
-                projectEntryExtGraph.CreateUpdateGanttProject(graph, projectRow, "", true);
+                SmartsheetClient smartsheetClient = projectEntryExtGraph.CheckTokenSheetSS(graph, projectRow, "", true);
+                projectEntryExtGraph.CreateEmployeesAcuUserSS(graph, smartsheetClient);
+                projectEntryExtGraph.CreateUpdateGanttProject(graph, projectRow, smartsheetClient, true);
             });
         }
     }

@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.Objects.PM;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class PMSetupSSExt : PXCacheExtension<PMSetup>
     {
@@ -32,5 +32,28 @@ namespace PX.SmartSheetIntegration
         [PXSelector(typeof(PMRateTable.rateTableID), DescriptionField = typeof(PMRateTable.description))]
         public virtual string UsrDefaultRateTableID { get; set; }
         #endregion
+
+        #region UsrSSTemplate
+        public abstract class usrSSTemplate : PX.Data.BQL.BqlString.Field<usrSSTemplate> { }
+        [PXDBString()]
+        [PXStringList()]
+        [PXUIField(DisplayName = "Smartsheet Template")]
+        public virtual string UsrSSTemplate { get; set; }
+        #endregion
+
+        #region UsrTypeTaskDate
+        public abstract class usrTypeTaskDate : PX.Data.BQL.BqlString.Field<usrTypeTaskDate> { }
+        [PXDBString(1)]
+        [PXStringList(new string[] { SmartsheetConstants.SSConstants.DAY, SmartsheetConstants.SSConstants.MONTH, SmartsheetConstants.SSConstants.YEAR }, new string[] { SmartsheetConstants.SSConstants.LABEL_DAY, SmartsheetConstants.SSConstants.LABEL_MONTH, SmartsheetConstants.SSConstants.LABEL_YEAR })]
+        [PXUIField(DisplayName = "Task Duration")]
+        public virtual string UsrTypeTaskDate { get; set; }
+        #endregion
+
+        #region UsrDurationTaskDate
+        public abstract class usrDurationTaskDate : PX.Data.BQL.BqlInt.Field<usrDurationTaskDate> { }
+        [PXDBInt]
+        [PXUIField(DisplayName = "")]
+        public virtual int? UsrDurationTaskDate { get; set; }
+        #endregion        
     }
 }

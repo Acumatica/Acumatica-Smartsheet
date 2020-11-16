@@ -1,3 +1,4 @@
 ﻿<Table TableName="Contract">
     <Column TableName="Contract" ColumnName="UsrSmartsheetContractID" ColumnType="bigint" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="Contract" ColumnName="UsrTemplateSS" ColumnType="string" AllowNull="True" MaxLength="20" DecimalPrecision="2" DecimalLength="20" IsNewColumn="True" IsUnicode="True" />
 </Table>

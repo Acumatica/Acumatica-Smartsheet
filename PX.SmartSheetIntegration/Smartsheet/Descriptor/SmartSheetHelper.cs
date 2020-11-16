@@ -6,7 +6,7 @@ using System.Linq;
 using Smartsheet.Api;
 using Smartsheet.Api.Models;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class SmartsheetHelper
     {
@@ -48,6 +48,39 @@ namespace PX.SmartSheetIntegration
             return;
         }
 
+        public DateTime CalculateWorkingDays(DateTime date, int days)
+        {
+            days -= 1;
+            if (days < 0)
+            {
+                throw new PXException(SmartsheetConstants.Messages.SMARTSHEET_TOKEN_MISSING);
+            }
+
+            if (days == 0) return date;
+
+            if (date.DayOfWeek == DayOfWeek.Saturday)
+            {
+                date = date.AddDays(2);
+                days -= 1;
+            }
+            else if (date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                date = date.AddDays(1);
+                days -= 1;
+            }
+
+            date = date.AddDays(days / 5 * 7);
+            int extraDays = days % 5;
+
+            if ((int)date.DayOfWeek + extraDays > 5)
+            {
+                extraDays += 2;
+            }
+
+            return date.AddDays(extraDays);
+
+        }
+
 
         /// <summary>
         /// Updates SS Project with new Acumatica tasks not yet synced
@@ -61,16 +94,18 @@ namespace PX.SmartSheetIntegration
                                             Dictionary<string, long> columnMap,
                                             ProjectEntry projectEntryGraph,
                                             long? sheetSelected,
-                                            SmartsheetHelper smartSheetHelperObject)
+                                            SmartsheetHelper smartSheetHelperObject, PXResultset<PMSSMapping> templateMappingSet)
         {
             //Add newly created rows to Smartsheet
-            List<Row> newRows = smartSheetHelperObject.InsertAcumaticaTasksInSS(projectEntryGraph, null, columnMap, false);
+            List<Row> newRows = smartSheetHelperObject.InsertAcumaticaTasksInSS(projectEntryGraph, columnMap, null, false, templateMappingSet);
             IList<Row> ssRows = smartsheetClient.SheetResources.RowResources.AddRows((long)sheetSelected, newRows);
 
             int ssTaskIDPosition = 0;
             if (ssRows.Count > 0 && ssRows[0].Cells != null)
             {
-                ssTaskIDPosition = smartSheetHelperObject.GetSSTaskPosition(ssRows[0].Cells, columnMap[SmartsheetConstants.ColumnMapping.TASK_ID]);
+                PMSSMapping mappingSS = templateMappingSet.Where(t => ((PMSSMapping)t).NameAcu.Trim().ToUpper() == SmartsheetConstants.ColumnMapping.TASKS_CD.Trim().ToUpper()).FirstOrDefault();
+
+                ssTaskIDPosition = smartSheetHelperObject.GetSSTaskPosition(ssRows[0].Cells, columnMap[mappingSS.NameSS]);
             }
 
             foreach (Row currentRow in ssRows)
@@ -109,7 +144,7 @@ namespace PX.SmartSheetIntegration
         public List<Row> InsertAcumaticaTasksInSS(ProjectEntry projectEntryGraph,
                                                         Dictionary<string, long> originalColumnMap,
                                                         Dictionary<string, long> modifiedColumnMap,
-                                                        bool firstSync)
+                                                        bool firstSync, PXResultset<PMSSMapping> templateMappingSet)
         {
             List<Row> newSSRows = new List<Row>();
             Row blankRow = new Row();
@@ -133,73 +168,35 @@ namespace PX.SmartSheetIntegration
                 List<Cell> newCells = new List<Cell>();
                 Cell currentCell = new Cell();
 
-                //Task
-                if (firstSync)
+                foreach (PMSSMapping row in templateMappingSet)
                 {
-                    currentCell = new Cell.AddCellBuilder(originalColumnMap[SmartsheetConstants.GanttTemplateMapping.TASK_NAME], taskRow.TaskCD).Build();
-                }
-                else
-                {
-                    currentCell = new Cell.AddCellBuilder(modifiedColumnMap[SmartsheetConstants.ColumnMapping.TASK_ID], taskRow.TaskCD).Build();
-                }
-                currentCell.Format = SmartsheetConstants.CellFormat.LARGE_BOLD_GRAY_BACKGROUND;
-                newCells.Add(currentCell);
-
-                //Dates
-                if (taskRow.StartDate != null && taskRow.EndDate != null)
-                {
-                    if (firstSync)
+                    if (!String.IsNullOrEmpty(row.NameAcu))
                     {
-                        currentCell = new Cell.AddCellBuilder(originalColumnMap[SmartsheetConstants.GanttTemplateMapping.START], taskRow.StartDate).Build();
+                        if (!String.IsNullOrEmpty(row.NameSS))
+                        {
+                            if (row.NameAcu == SmartsheetConstants.ColumnMapping.DURATION)
+                            {
+                                currentCell = new Cell.AddCellBuilder(originalColumnMap[row.NameSS], projectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu).ToString()).Build();
+                                currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
+                            }
+                            else
+                            {
+                                if (row.NameAcu == SmartsheetConstants.ColumnMapping.PCT_COMPLETE)
+                                {
+                                    decimal completePercent = Convert.ToDecimal(projectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu)) / 100;
+                                    currentCell = new Cell.AddCellBuilder(originalColumnMap[row.NameSS], completePercent).Build();
+                                    currentCell.Format = SmartsheetConstants.CellFormat.LARGER_GRAY_BACKGROUND_PERCENTAGE;
+                                }
+                                else
+                                {
+                                    if (row.NameAcu == SmartsheetConstants.ColumnMapping.TASKS_CD) taskRow.TaskCD = taskRow.TaskCD.Trim();
+                                    currentCell = new Cell.AddCellBuilder(originalColumnMap[row.NameSS], projectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu)).Build();
+                                    currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
+                                }
+                            }
+                            newCells.Add(currentCell);
+                        }
                     }
-                    else
-                    {
-                        currentCell = new Cell.AddCellBuilder(modifiedColumnMap[SmartsheetConstants.ColumnMapping.START_DATE], taskRow.StartDate).Build();
-                    }
-                    currentCell.Format = SmartsheetConstants.CellFormat.LARGER_GRAY_BACKGROUND;
-                    newCells.Add(currentCell);
-
-                    TimeSpan dateDifference = (TimeSpan)(taskRow.EndDate - taskRow.StartDate);
-
-                    if (firstSync)
-                    {
-                        currentCell = new Cell.AddCellBuilder(originalColumnMap[SmartsheetConstants.GanttTemplateMapping.DURATION], (dateDifference.Days + 1).ToString()).Build();
-                    }
-                    else
-                    {
-                        currentCell = new Cell.AddCellBuilder(modifiedColumnMap[SmartsheetConstants.ColumnMapping.DURATION], (dateDifference.Days + 1).ToString()).Build();
-                    }
-                    currentCell.Format = SmartsheetConstants.CellFormat.LARGER_GRAY_BACKGROUND;
-                    newCells.Add(currentCell);
-                }
-
-                //Completed %
-                if (taskRow.CompletedPercent != null)
-                {
-                    if (firstSync)
-                    {
-                        currentCell = new Cell.AddCellBuilder(originalColumnMap[SmartsheetConstants.GanttTemplateMapping.PCT_COMPLETE], (double)taskRow.CompletedPercent / 100).Build();
-                    }
-                    else
-                    {
-                        currentCell = new Cell.AddCellBuilder(modifiedColumnMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE], (double)taskRow.CompletedPercent / 100).Build();
-                    }
-                    currentCell.Format = SmartsheetConstants.CellFormat.LARGER_GRAY_BACKGROUND_PERCENTAGE;
-                    newCells.Add(currentCell);
-                }
-
-                if (taskRow.Description != null)
-                {
-                    if (firstSync)
-                    {
-                        currentCell = new Cell.AddCellBuilder(originalColumnMap[SmartsheetConstants.GanttTemplateMapping.COMMENTS], taskRow.Description).Build();
-                    }
-                    else
-                    {
-                        currentCell = new Cell.AddCellBuilder(modifiedColumnMap[SmartsheetConstants.ColumnMapping.DESCRIPTION], taskRow.Description).Build();
-                    }
-                    currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
-                    newCells.Add(currentCell);
                 }
 
                 Row currentRow = new Row.AddRowBuilder(null, true, null, null, null).SetCells(newCells).Build();
@@ -230,21 +227,24 @@ namespace PX.SmartSheetIntegration
                                                 IList<Row> ssRowSet,
                                                 SmartsheetHelper smartSheetHelperObject,
                                                 Dictionary<string, long> columnMap,
-                                                int ssTaskIDPosition)
+                                                int ssTaskIDPosition, 
+                                                PXResultset<PMSSMapping> templateMappingSet)
         {
             if (projectEntryGraph.Project.Current != null
                     && projectEntryGraph.Project.Current.TemplateID != null)
             {
-                PXResultset<PMTask> templateTasksSet = PXSelect<PMTask,
-                                                Where<PMTask.projectID, Equal<Required<PMTask.projectID>>>>
-                                                .Select(projectEntryGraph, projectEntryGraph.Project.Current.TemplateID);
+                PXResultset<PMTask> templateTasksSet = PXSelect<
+                    PMTask,
+                    Where<PMTask.projectID, Equal<Required<PMTask.projectID>>>>
+                    .Select(projectEntryGraph, projectEntryGraph.Project.Current.TemplateID);
 
                 foreach (PMTask templateTask in templateTasksSet)
                 {
-                    PMTask actualTask = PXSelect<PMTask,
-                                                Where<PMTask.projectID, Equal<Required<PMTask.projectID>>,
-                                                And<PMTask.taskCD, Equal<Required<PMTask.taskCD>>>>>
-                                                .Select(projectEntryGraph, projectEntryGraph.Project.Current.ContractID, templateTask.TaskCD.Trim());
+                    PMTask actualTask = PXSelect<
+                        PMTask,
+                        Where<PMTask.projectID, Equal<Required<PMTask.projectID>>,
+                            And<PMTask.taskCD, Equal<Required<PMTask.taskCD>>>>>
+                        .Select(projectEntryGraph, projectEntryGraph.Project.Current.ContractID, templateTask.TaskCD.Trim());
 
                     if (actualTask == null)
                     {
@@ -253,11 +253,13 @@ namespace PX.SmartSheetIntegration
 
                     PMTaskSSExt pmTemplateTaskSSExtRow = PXCache<PMTask>.GetExtension<PMTaskSSExt>(templateTask);
 
-                    PXResultset<PMSubTask> templateSubTasksSet = PXSelect<PMSubTask,
-                                                                    Where<PMSubTask.projectID, Equal<Required<PMSubTask.projectID>>,
-                                                                    And<PMSubTask.taskID, Equal<Required<PMSubTask.taskID>>>>,
-                                                                    OrderBy<Asc<PMSubTask.position>>>
-                                                                    .Select(projectEntryGraph, templateTask.ProjectID, templateTask.TaskID);
+                    PXResultset<PMSubTask> templateSubTasksSet = PXSelect<
+                        PMSubTask,
+                        Where<PMSubTask.projectID, Equal<Required<PMSubTask.projectID>>,
+                            And<PMSubTask.taskID, Equal<Required<PMSubTask.taskID>>>>,
+                        OrderBy<
+                            Asc<PMSubTask.position>>>
+                        .Select(projectEntryGraph, templateTask.ProjectID, templateTask.TaskID);
 
                     int dependencyStartDateOffset = 0;
                     long dependencySibling = 0;
@@ -268,8 +270,7 @@ namespace PX.SmartSheetIntegration
                         {
                             foreach (PMSubTask subTaskRow in templateSubTasksSet)
                             {
-                                dependencySibling = smartSheetHelperObject.AddSubTasks(smartsheetClient, columnMap, sheet, actualTask, pmTemplateTaskSSExtRow, subTaskRow, ssRow.Id, dependencyStartDateOffset, dependencySibling);
-                                dependencyStartDateOffset += (int)subTaskRow.Duration;
+                                dependencySibling = smartSheetHelperObject.AddSubTasks(smartsheetClient, projectEntryGraph, columnMap, sheet, actualTask, pmTemplateTaskSSExtRow, subTaskRow, ssRow.Id, dependencyStartDateOffset, dependencySibling, templateMappingSet);
                             }
                         }
                     }
@@ -293,36 +294,61 @@ namespace PX.SmartSheetIntegration
         /// <param name="dependencySibling"></param>
         /// <returns></returns>
         public long AddSubTasks(SmartsheetClient smartsheetClient,
+                                    ProjectEntry projectEntryGraph,
                                     Dictionary<string, long> columnMap,
                                     Sheet sheet, PMTask taskRow,
                                     PMTaskSSExt pmTemplateTaskSSExtRow,
                                     PMSubTask subTaskRow,
                                     long? columnID,
                                     int dependencyStartDateOffset,
-                                    long dependencySibling)
+                                    long dependencySibling, 
+                                    PXResultset<PMSSMapping> templateMappingSSRow)
         {
             List<Cell> newCells = new List<Cell>();
+            Cell currentCell;
 
-            Cell currentCell = new Cell.AddCellBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.TASK_NAME], subTaskRow.SubTaskCD).Build();
-            currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
-            newCells.Add(currentCell);
+            ProjectEntry copyProjectEntryGraph = projectEntryGraph;
+            ProjectEntryExt graphExtended = copyProjectEntryGraph.GetExtension<ProjectEntryExt>();
 
-            if (pmTemplateTaskSSExtRow.UsrEnableSubtaskDependency == true)
+            if (taskRow != null)
             {
-                DateTime adjustedStartDate = taskRow.StartDate.Value.AddDays((double)dependencyStartDateOffset);
-                currentCell = new Cell.AddCellBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.START], adjustedStartDate).Build();
-                newCells.Add(currentCell);
-            }
-            else
-            {
-                currentCell = new Cell.AddCellBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.START], taskRow.StartDate).Build();
-                newCells.Add(currentCell);
-            }
+                taskRow.TaskCD = subTaskRow.SubTaskCD;
+                taskRow.Description = subTaskRow.Description;
+                if (pmTemplateTaskSSExtRow != null)
+                {
+                    if (pmTemplateTaskSSExtRow.UsrEnableSubtaskDependency == true)
+                    {
+                        taskRow.StartDate = taskRow.EndDate;
+                    }
+                }
 
-            currentCell = new Cell.AddCellBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.DURATION], subTaskRow.Duration.ToString()).Build();
-            newCells.Add(currentCell);
-            currentCell = new Cell.AddCellBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.COMMENTS], subTaskRow.Description).Build();
-            newCells.Add(currentCell);
+                foreach (PMSSMapping row in templateMappingSSRow)
+                {
+                    if (!String.IsNullOrEmpty(row.NameAcu))
+                    {
+                        if (copyProjectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu) is DateTime)
+                        {
+                            currentCell = new Cell.AddCellBuilder(columnMap[row.NameSS], (DateTime)copyProjectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu)).Build();
+                            currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
+                        }
+                        else
+                        {
+                            if (row.NameAcu == SmartsheetConstants.ColumnMapping.PCT_COMPLETE)
+                            {
+                                decimal completePercent = Convert.ToDecimal(copyProjectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu)) / 100;
+                                currentCell = new Cell.AddCellBuilder(columnMap[row.NameSS], completePercent).Build();
+                                currentCell.Format = SmartsheetConstants.CellFormat.LARGER_GRAY_BACKGROUND_PERCENTAGE;
+                            }
+                            else
+                            {
+                                currentCell = new Cell.AddCellBuilder(columnMap[row.NameSS], copyProjectEntryGraph.GetValue(SmartsheetConstants.ViewName.TASK, taskRow, row.NameAcu).ToString()).Build();
+                                currentCell.Format = SmartsheetConstants.CellFormat.LARGE_GRAY_BACKGROUND;
+                            }
+                        }
+                        newCells.Add(currentCell);
+                    }
+                }
+            }
 
             Row currentRow = new Row.AddRowBuilder(null, true, null, null, null).SetCells(newCells).Build();
             currentRow.ParentId = (long)columnID;
@@ -349,10 +375,13 @@ namespace PX.SmartSheetIntegration
                                                     PMProject pmProjectRow,
                                                     PMSetupSSExt pmSetupSSExt,
                                                     Sheet updatedSheet,
-                                                    Dictionary<string, int> columnPositionMap)
+                                                    Dictionary<string, int> columnPositionMap, 
+                                                    PXResultset<PMSSMapping> templateMappingSet)
         {
             bool recordedInAcumatica = false;
             int primaryColumnPosition = 0;
+
+            PMTask pmTaskNewEntry = new PMTask();
 
             foreach (Column updatedColumn in updatedSheet.Columns)
             {
@@ -389,7 +418,7 @@ namespace PX.SmartSheetIntegration
                             //Fields retrieved: Task, Description, Start Date, End Date, % Complete,
                             if (updatedSSRow.Cells[primaryColumnPosition].Value != null)
                             {
-                                PMTask pmTaskNewEntry = new PMTask();
+                                pmTaskNewEntry = new PMTask();
                                 pmTaskNewEntry.ProjectID = pmProjectRow.ContractID;
                                 pmTaskNewEntry.TaskCD = updatedSSRow.Cells[primaryColumnPosition].Value.ToString();
 
@@ -398,97 +427,48 @@ namespace PX.SmartSheetIntegration
 
                                 if (taskCDValidation == null)
                                 {
-                                    pmTaskNewEntry = projectEntryGraph.Tasks.Insert(pmTaskNewEntry);
-
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]].Value != null)
-                                    {
-                                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.description>(pmTaskNewEntry, updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]].Value.ToString());
-                                    }
-                                    else
-                                    {
-                                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.description>(pmTaskNewEntry, SmartsheetConstants.Messages.DEFAULT_TASK_DESCRIPTION);
-                                    }
-
                                     projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.rateTableID>(pmTaskNewEntry, pmSetupSSExt.UsrDefaultRateTableID);
                                     projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.status>(pmTaskNewEntry, SmartsheetConstants.SSConstants.ACTIVE);
+                                    pmTaskNewEntry.Description = SmartsheetConstants.Messages.DEFAULT_TASK_DESCRIPTION;
 
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value != null)
+                                    string durationVar = "";
+                                    foreach (PMSSMapping row in templateMappingSet)
                                     {
-                                        if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value is DateTime)
+                                        if (!String.IsNullOrEmpty(row.NameAcu))
                                         {
-                                            DateTime startDate = (DateTime)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value;
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.startDate>(pmTaskNewEntry, startDate);
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.plannedStartDate>(pmTaskNewEntry, startDate);
+                                            SettingForSheets(row, columnPositionMap, updatedSSRow, pmTaskNewEntry, projectEntryGraph, durationVar);
                                         }
-                                    }
-
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value != null)
-                                    {
-                                        if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value is DateTime)
-                                        {
-                                            DateTime endDate = (DateTime)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value;
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.endDate>(pmTaskNewEntry, endDate);
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.plannedEndDate>(pmTaskNewEntry, endDate);
-                                        }
-                                    }
-
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]].Value != null
-                                                && pmTaskNewEntry.Status == SmartsheetConstants.SSConstants.ACTIVE)
-                                    {
-                                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.completedPercent>(pmTaskNewEntry, (decimal)((double)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]].Value * 100));
                                     }
 
                                     PMTaskSSExt pmTaskExtRow = PXCache<PMTask>.GetExtension<PMTaskSSExt>(pmTaskNewEntry);
                                     pmTaskExtRow.UsrSmartsheetTaskID = updatedSSRow.Id;
-
-                                    pmTaskNewEntry = projectEntryGraph.Tasks.Update(pmTaskNewEntry);
+                                    //Insert() has to be invoked at the end as the order in which the values are assigned to the object depend on the iteration
+                                    pmTaskNewEntry = projectEntryGraph.Tasks.Insert(pmTaskNewEntry);
                                 }
                             }
                         }
                         else //Previously existing row in SS
                         {
+                            pmTaskNewEntry = new PMTask();
                             //Fields updated: Description, Start Date, End Date, % complete.
                             if (updatedSSRow.Cells[primaryColumnPosition].Value != null)
                             {
                                 if (currentTaskRow != null)
                                 {
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]].Value != null)
-                                    {
-                                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.description>(currentTaskRow, updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.DESCRIPTION]].Value.ToString());
-                                    }
+                                    // Find the Task to update it
+                                    PMSSMapping mappingSS = templateMappingSet.Where(t => ((PMSSMapping)t).NameAcu.Trim().ToUpper() == SmartsheetConstants.ColumnMapping.TASKS_CD.Trim().ToUpper()).FirstOrDefault();
 
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value != null)
+                                    pmTaskNewEntry = (PMTask)projectEntryGraph.Tasks.Select()
+                                                        .Where(t => ((PMTask)t).TaskCD.Trim().ToUpper() == updatedSSRow.Cells[columnPositionMap[mappingSS.NameSS]].Value.ToString().Trim().ToUpper()).FirstOrDefault();
+                                    string durationVar = "";
+
+                                    foreach (PMSSMapping row in templateMappingSet)
                                     {
-                                        if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value is DateTime)
+                                        if (!String.IsNullOrEmpty(row.NameAcu))
                                         {
-                                            DateTime startDate = (DateTime)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.START_DATE]].Value;
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.startDate>(currentTaskRow, startDate);
+                                            SettingForSheets(row, columnPositionMap, updatedSSRow, pmTaskNewEntry, projectEntryGraph, durationVar);
                                         }
                                     }
-
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value != null)
-                                    {
-                                        if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value is DateTime)
-                                        {
-                                            DateTime endDate = (DateTime)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.END_DATE]].Value;
-                                            projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.endDate>(currentTaskRow, endDate);
-                                        }
-                                    }
-
-                                    if (updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]] != null
-                                            && updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]].Value != null
-                                                && currentTaskRow.Status == SmartsheetConstants.SSConstants.ACTIVE)
-                                    {
-                                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTask.completedPercent>(currentTaskRow, (decimal)((double)updatedSSRow.Cells[columnPositionMap[SmartsheetConstants.ColumnMapping.PCT_COMPLETE]].Value * 100));
-                                    }
-
                                     currentTaskRow = projectEntryGraph.Tasks.Update(currentTaskRow);
                                 }
                             }
@@ -503,6 +483,59 @@ namespace PX.SmartSheetIntegration
             }
 
             return;
+        }
+
+        /// <summary>
+        /// Behavior of data obtained from SmartSheet to insert or update in Acumatica
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="columnPositionMap"></param>
+        /// <param name="updatedSSRow"></param>
+        /// <param name="pmTaskNewEntry"></param>
+        /// <param name="projectEntryGraph"></param>
+        /// <param name="durationVar"></param>
+        public void SettingForSheets(PMSSMapping row, Dictionary<string, int> columnPositionMap, Row updatedSSRow, PMTask pmTaskNewEntry, ProjectEntry projectEntryGraph, string durationVar) 
+        {
+            if (updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value != null)
+            {
+                if (updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value is DateTime)
+                {
+                    DateTime rowDate = (DateTime)updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value;
+                    projectEntryGraph.Tasks.Cache.SetValueExt(pmTaskNewEntry, row.NameAcu, rowDate);
+                }
+                else
+                {
+                    //Duration has to be assigned before StartDate
+                    if (row.NameAcu == SmartsheetConstants.ColumnMapping.DURATION)
+                    {
+                        durationVar = updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value.ToString().Replace("d", "");
+                        projectEntryGraph.Tasks.Cache.SetValueExt(pmTaskNewEntry, row.NameAcu, durationVar);
+                    }
+                    else
+                    {
+                        if (row.NameAcu == SmartsheetConstants.ColumnMapping.PCT_COMPLETE)
+                        {
+                            decimal percent = Convert.ToDecimal(updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value.ToString().Replace("%", "")) * 100;
+                            projectEntryGraph.Tasks.Cache.SetValueExt(pmTaskNewEntry, row.NameAcu, percent);
+                        }
+                        else
+                        {
+                            projectEntryGraph.Tasks.Cache.SetValueExt(pmTaskNewEntry, row.NameAcu, updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value.ToString());
+                        }
+
+                    }
+                }
+
+                if (row.NameAcu == SmartsheetConstants.ColumnMapping.START_DATE)
+                {
+                    if (!String.IsNullOrEmpty(durationVar))
+                    {
+                        int durationRow = Convert.ToInt32(durationVar);
+                        DateTime rowDate = (DateTime)updatedSSRow.Cells[columnPositionMap[row.NameSS]].Value;
+                        projectEntryGraph.Tasks.Cache.SetValueExt<PMTaskSSExt.duration>(pmTaskNewEntry, durationRow);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -525,41 +558,6 @@ namespace PX.SmartSheetIntegration
             }
 
             return ssTaskIDPosition;
-        }
-
-        /// <summary>
-        /// Renames and reorganizes the Gantt Chart columns created from Smartsheet's Gantt template
-        /// </summary>
-        /// <param name="smartsheetClient"></param>
-        /// <param name="sheet"></param>
-        /// <param name="columnMap"></param>
-        public void AdjustGanttSheet(SmartsheetClient smartsheetClient, Sheet sheet, Dictionary<string, long> columnMap)
-        {
-            Column updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.TASK_NAME], SmartsheetConstants.ColumnMapping.TASK_ID, 0).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.START], SmartsheetConstants.ColumnMapping.START_DATE, 1).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.FINISH], SmartsheetConstants.ColumnMapping.END_DATE, 2).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.ASSIGNED_TO], SmartsheetConstants.ColumnMapping.ASSIGNED_TO, 8).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.PCT_COMPLETE], SmartsheetConstants.ColumnMapping.PCT_COMPLETE, 5).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.COMMENTS], SmartsheetConstants.ColumnMapping.DESCRIPTION, 6).SetWidth(350).Build());
-
-            updatedColumn = smartsheetClient.SheetResources.ColumnResources.UpdateColumn
-                                    ((long)sheet.Id, new Column.UpdateColumnBuilder(columnMap[SmartsheetConstants.GanttTemplateMapping.PREDECESSORS], SmartsheetConstants.ColumnMapping.PREDECESSORS, 7).Build());
-
-            //Deleted column
-            smartsheetClient.SheetResources.ColumnResources.DeleteColumn((long)sheet.Id, columnMap[SmartsheetConstants.GanttTemplateMapping.STATUS]);
-
-            return;
         }
 
         /// <summary>

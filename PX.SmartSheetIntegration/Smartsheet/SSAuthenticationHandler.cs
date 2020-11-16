@@ -9,7 +9,7 @@ using PX.Data;
 using PX.Owin;
 using PX.SM;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     public class SSAuthenticationHandler : IConditionalOwinConfigurationPart, ISessionDependentOwinConfigurationPart
     {

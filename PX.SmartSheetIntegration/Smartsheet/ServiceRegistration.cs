@@ -2,7 +2,7 @@
 using Module = Autofac.Module;
 using PX.Owin;
 
-namespace PX.SmartSheetIntegration
+namespace SmartSheetIntegration
 {
     internal class ServiceRegistration : Module
     {

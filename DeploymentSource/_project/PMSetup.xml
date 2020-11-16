@@ -2,4 +2,7 @@
     <Column TableName="PMSetup" ColumnName="UsrDefaultRateTableID" ColumnType="string" AllowNull="True" MaxLength="15" DecimalPrecision="2" DecimalLength="15" IsNewColumn="True" IsUnicode="True" />
     <Column TableName="PMSetup" ColumnName="UsrSmartsheetClientID" ColumnType="string" AllowNull="True" MaxLength="255" DecimalPrecision="2" DecimalLength="255" IsNewColumn="True" IsUnicode="True" />
     <Column TableName="PMSetup" ColumnName="UsrSmartsheetAppSecret" ColumnType="string" AllowNull="True" MaxLength="255" DecimalPrecision="2" DecimalLength="255" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="PMSetup" ColumnName="UsrSSTemplate" ColumnType="string" AllowNull="True" MaxLength="20" DecimalPrecision="0" DecimalLength="0" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="PMSetup" ColumnName="UsrTypeTaskDate" ColumnType="string" AllowNull="True" MaxLength="1" DecimalPrecision="2" DecimalLength="1" IsNewColumn="True" IsUnicode="True" />
+    <Column TableName="PMSetup" ColumnName="UsrDurationTaskDate" ColumnType="int" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
 </Table>
