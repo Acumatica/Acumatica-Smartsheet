@@ -3,7 +3,7 @@
 Smartsheet and Acumatica Cloud ERP Integration
 ==================================
 
-Smartsheet is a modern SaaS visual project scheduling tool for tasks and resources that’s integrated with Acumatica Project Accounting to make any project professional’s job easier. Field supervisors and project managers can use Smartsheet to reschedule tasks and resources quickly and easily. Schedule changes are sent back to Acumatica to update Project Accounting. Users who perform back-office business processes such as project costing, purchasing, and expense processing can do so in Acumatica.
+Smartsheet is a modern SaaS visual project scheduling tool for tasks and resources that’s integrated with Acumatica Project Accounting to make any project professional’s job easier. Field supervisors and project managers can use Smartsheet to reschedule tasks and resources quickly and easily. Scheduled changes are sent back to Acumatica to update Project Accounting. Users who perform back-office business processes such as project costing, purchasing, and expense processing can do so in Acumatica.
 
 Note: Smartsheet account is required to use this integration. 
 
@@ -79,7 +79,7 @@ With the connection information established in above Step, every Acumatica user 
 
 This integration utilizes open source [Smartsheet SDK](https://github.com/smartsheet-platform/smartsheet-csharp-sdk)
 
-For more information on how to use this integration to synchronize project information, please watch this [demo video](https://acumatica.wistia.com/medias/6k1ex301t4)
+For more information on how to use this integration to synchronize project information, please watch this [demo video](https://youtu.be/tkeiSayV9x0)
 
 For FAQs and additional information, please visit [Acumatica-Smartsheet-Integration](https://www.acumatica.com/extensions/acumatica-smartsheet-integration)
 
@@ -89,6 +89,6 @@ None at the moment.
 
 ## Copyright and License
 
-Copyright © `2017` `Acumatica`
+Copyright © `2020` `Acumatica`
 
 This component is licensed under the MIT License, a copy of which is available online [here](LICENSE.md)
