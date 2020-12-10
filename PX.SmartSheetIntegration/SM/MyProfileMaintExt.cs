@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using PX.Data.DependencyInjection;
 using Microsoft.AspNet.SignalR.Infrastructure;
+using PX.OAuthClient.Hubs;
 
 namespace SmartSheetIntegration
 {
@@ -273,9 +274,8 @@ namespace SmartSheetIntegration
 
         private void SendRefreshCall()
         {
-            this.Base.Actions.PressCancel();
-            this.Base.UserProfile.Cache.Clear();
-            this.Base.UserProfile.Cache.ClearQueryCache();
+            var hubContext = _signalRConnectionManager.GetHubContext<RefreshHub>();
+            hubContext.Clients.All.RefreshPage();
         }
     }
 }
