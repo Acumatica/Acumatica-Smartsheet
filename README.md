@@ -73,7 +73,7 @@ With the connection information established in above Step, every Acumatica user 
 
     ![Screenshot](/_ReadMeImages/Image7.png)
   
-6. Once allowed, your Smartsheet and Acumatica integration is ready to use.
+6. Once allowed, refresh the “My Profile” screen. Your Smartsheet and Acumatica integration is ready to use.
 
     ![Screenshot](/_ReadMeImages/Image8.png)
 
