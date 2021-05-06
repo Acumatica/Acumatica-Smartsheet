@@ -34,7 +34,6 @@ Next step is to configure the connection between Acumatica and Smartsheet. This 
 
 Note: If the "Developer Tools" option is not listed, you should register in https://developers.smartsheet.com/register/
 An email will be received with a confirmation link. Finally, create a Developer Profile to complete the process
-
     ![Screenshot](/_ReadMeImages/DevProfile.png)
 
 4. From the Developer Tools screen, select “Create New App”. 
@@ -56,7 +55,7 @@ An email will be received with a confirmation link. Finally, create a Developer 
     ![Screenshot](/_ReadMeImages/Image4.png)
   
 6. Please save the App Client ID and App secret. You will need this information to complete the connection within Acumatica. 
-7. Login to your Acuamtica instance and search for Project Preferences Screen (PM101000).
+7. Login to your Acumatica instance and search for Project Preferences Screen (PM101000).
 8. Please provide the “App Client ID” and “App Secret” to the SmartSheet settings as show below
 
     ![Screenshot](/_ReadMeImages/Image5.png)
