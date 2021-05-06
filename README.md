@@ -32,6 +32,11 @@ Next step is to configure the connection between Acumatica and Smartsheet. This 
 
     ![Screenshot](/_ReadMeImages/Image2.png)
 
+Note: If the "Developer Tools" option is not listed, you should register in https://developers.smartsheet.com/register/
+An email will be received with a confirmation link. Finally, create a Developer Profile to complete the process
+
+    ![Screenshot](/_ReadMeImages/DevProfile.png)
+
 4. From the Developer Tools screen, select “Create New App”. 
    
    *  Specify the App Name
