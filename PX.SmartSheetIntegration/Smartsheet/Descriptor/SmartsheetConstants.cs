@@ -59,7 +59,7 @@ namespace SmartSheetIntegration
             public const string DEFAULT_TEMPLATE = "A Smartsheet Template must be assigned to the Project";
             public const string CONFIRM_RELOAD_VALUES = "There is a Smartsheet mapping available. Do you want to reload the values? (this will override the current content)";
             public const string CONFIRM_UNLINK_PROJECT = "The current Project does not exist in Smartsheet. Do you want to create and sync this Project?";
-            public const string UNLINK_PROJECT = "The Project does not exist in SmartSheet";
+            public const string UNLINK_PROJECT = "The Smartsheet reference associated to this Project does not exist. Repeat the sync process in order to create a new link.";
             public const string CONFIRM_HEADER = "Confirmation";
             public const string NAME_PROJECT_TEMP_SMARTSHEET = "Smartsheet Template column";
             public const string ERROR_SETUP = "Error getting the setup fields";

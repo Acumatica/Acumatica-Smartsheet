@@ -1,4 +1,5 @@
 using PX.Data;
+using PX.Data.WorkflowAPI;
 using PX.Objects.EP;
 using PX.Objects.PM;
 using PX.SM;
@@ -12,27 +13,23 @@ using System.Linq;
 
 namespace SmartSheetIntegration
 {
-    public class ProjectEntryExt : PXGraphExtension<ProjectEntry>
+    public class ProjectEntrySmartsheetExt : PXGraphExtension<ProjectEntry>
     {
-        public override void Initialize()
-        {
-            base.Initialize();
-            this.Base.action.AddMenuAction(synGanttSmartsheetProject);
-        }
-
         #region DataMembers
         public PXSelect<EPUsersListSS> UserSSList;
 
         public PXSelect<
-            PMSubTask, 
-            Where<PMSubTask.projectID, Equal<Current<PMTask.projectID>>, 
+            PMSubTask,
+            Where<PMSubTask.projectID, Equal<Current<PMTask.projectID>>,
                 And<PMSubTask.taskID, Equal<Current<PMTask.taskID>>>>,
             OrderBy<
-                Asc<PMSubTask.position>>> 
+                Asc<PMSubTask.position>>>
             PMSubTask;
         #endregion
 
         #region Events
+
+        #region PMProject
         protected virtual void PMProject_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
         {
             if (e.Row == null)
@@ -62,7 +59,9 @@ namespace SmartSheetIntegration
             PXStringListAttribute.SetList<PMProjectSSExt.usrTemplateSS>(sender, pmProjectRow, fields.Keys.ToArray(), fields.Values.ToArray());
             PXUIFieldAttribute.SetEnabled<PMProjectSSExt.usrTemplateSS>(sender, pmProjectRow, !(bool)pmProjectSSExtRow.SyncedInSmartsheet);
         }
+        #endregion
 
+        #region PMTask
         protected virtual void PMTask_Duration_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
         {
             if (e.Row == null)
@@ -73,9 +72,9 @@ namespace SmartSheetIntegration
             PMTask pmTaskRow = (PMTask)e.Row;
             PMTaskSSExt pmTaskExtRow = PXCache<PMTask>.GetExtension<PMTaskSSExt>(pmTaskRow);
 
-            if (pmTaskExtRow.Duration != null 
-                    && pmTaskExtRow.Duration >= 1 
-                    && pmTaskRow.StartDate != null 
+            if (pmTaskExtRow.Duration != null
+                    && pmTaskExtRow.Duration >= 1
+                    && pmTaskRow.StartDate != null
                     && e.OldValue != null)
             {
                 SmartsheetHelper smartSheetHelperObject = new SmartsheetHelper();
@@ -94,8 +93,8 @@ namespace SmartSheetIntegration
             PMTask pmTaskRow = (PMTask)e.Row;
             PMTaskSSExt pmTaskExtRow = PXCache<PMTask>.GetExtension<PMTaskSSExt>(pmTaskRow);
 
-            if (pmTaskExtRow.Duration != null 
-                    && pmTaskExtRow.Duration >= 1 
+            if (pmTaskExtRow.Duration != null
+                    && pmTaskExtRow.Duration >= 1
                     && e.NewValue != null)
             {
                 SmartsheetHelper smartSheetHelperObject = new SmartsheetHelper();
@@ -105,7 +104,10 @@ namespace SmartSheetIntegration
         }
         #endregion
 
+        #endregion
+
         #region Actions
+
         public PXAction<PMProject> synGanttSmartsheetProject;
         [PXUIField(DisplayName = SmartsheetConstants.ActionsNames.SYNC_SMARTSHEET_PROJECT, MapEnableRights = PXCacheRights.Update, MapViewRights = PXCacheRights.Update)]
         [PXProcessButton(CommitChanges = true)]
@@ -126,7 +128,7 @@ namespace SmartSheetIntegration
                     using (PXTransactionScope ts = new PXTransactionScope())
                     {
                         projectEntryGraph = this.Base;
-                        ProjectEntryExt graphExtended = projectEntryGraph.GetExtension<ProjectEntryExt>();
+                        ProjectEntrySmartsheetExt graphExtended = projectEntryGraph.GetExtension<ProjectEntrySmartsheetExt>();
                         CreateEmployeesAcuUserSS(projectEntryGraph, smartsheetClient);
                         graphExtended.CreateUpdateGanttProject(projectEntryGraph, pmProjectRow, smartsheetClient);
                         ts.Complete();
@@ -200,7 +202,7 @@ namespace SmartSheetIntegration
             {
                 throw new PXException(SmartsheetConstants.Messages.DURATION_FIELDS_NOT_INDICATED);
             }
-            
+
             return adapter.Get();
         }
 
@@ -224,7 +226,7 @@ namespace SmartSheetIntegration
 
             PMSetup setupRecord = projectEntryGraph.Setup.Select();
             PMSetupSSExt pmSetupSSExt = PXCache<PMSetup>.GetExtension<PMSetupSSExt>(setupRecord);
-            
+
             SmartsheetHelper smartSheetHelperObject = new SmartsheetHelper();
             if (String.IsNullOrEmpty(pmProjectSSExt.UsrTemplateSS))
             {
@@ -242,7 +244,7 @@ namespace SmartSheetIntegration
                 //////////////////
                 //Information from Acumatica is updated in Smartsheet
                 //////////////////
-                
+
                 PXResultset<PMSSMapping> templateMappingSet = PXSelect<
                     PMSSMapping,
                     Where<PMSSMapping.templateSS, Equal<Required<PMSSMapping.templateSS>>>>
@@ -266,7 +268,7 @@ namespace SmartSheetIntegration
                 }
                 else //Acumatica Project has not been linked to Smartsheet
                 {
-                    //Sheet is created from a Gantt Template available in SmartSheet
+                    //Sheet is created from a the template selected in the Project
                     Sheet sheet = new Sheet.CreateSheetFromTemplateBuilder(sheetName, Convert.ToInt64(pmProjectSSExt.UsrTemplateSS)).Build();
                     sheet = smartsheetClient.SheetResources.CreateSheet(sheet);
 
@@ -289,6 +291,7 @@ namespace SmartSheetIntegration
 
                         ssTaskIDPosition = smartSheetHelperObject.GetSSTaskPosition(ssRows[0].Cells, currentColumnMap[mappingSS.NameSS]);
                     }
+
                     // Add SubTasks
                     smartSheetHelperObject.InsertAcumaticaSubTasks(projectEntryGraph, smartsheetClient, sheet, ssRows, smartSheetHelperObject, currentColumnMap, ssTaskIDPosition, templateMappingSet);
 
@@ -329,6 +332,10 @@ namespace SmartSheetIntegration
                     columnPosition += 1;
                 }
 
+                projectEntryGraph.Actions.PressSave();
+                //Cache is cleared to avoid "Another process has updated PMTask" error.
+                projectEntryGraph.Actions.PressCancel();
+
                 smartSheetHelperObject.UpdateAcumaticaTasks(projectEntryGraph, pmProjectRow, pmSetupSSExt, updatedSheet, columnPositionMap, templateMappingSet);
 
                 projectEntryGraph.Actions.PressSave();
@@ -367,7 +374,7 @@ namespace SmartSheetIntegration
             PMProjectSSExt pmProjectSSExt = PXCache<PMProject>.GetExtension<PMProjectSSExt>(pmProjectRow);
 
             Users userRecord = PXSelect<
-                Users, 
+                Users,
                 Where<Users.pKID, Equal<Required<AccessInfo.userID>>>>
                 .Select(projectEntryGraph, projectEntryGraph.Accessinfo.UserID);
             UsersSSExt userRecordSSExt = PXCache<Users>.GetExtension<UsersSSExt>(userRecord);
@@ -381,7 +388,10 @@ namespace SmartSheetIntegration
 
             try
             {
-                SmartsheetClient smartsheetClient = new SmartsheetBuilder().SetAccessToken(token.AccessToken).Build();
+                SmartsheetClient smartsheetClient = new SmartsheetBuilder()
+                                                        .SetAccessToken(token.AccessToken)
+                                                        .SetDateTimeFixOptOut(true)
+                                                        .Build();
 
                 long? sheetSelected;
                 Dictionary<string, long> currentColumnMap = new Dictionary<string, long>();
@@ -409,23 +419,20 @@ namespace SmartSheetIntegration
 
                 if (ex.Message.Contains(SmartsheetConstants.SSConstants.NOTFOUND_PROJECT_MESSAGE))
                 {
-                    if(isMassProcess)
+                    if (isMassProcess)
                     {
-                        SmartsheetClient smartsheetClient = new SmartsheetBuilder().SetAccessToken(token.AccessToken).Build();
+                        SmartsheetClient smartsheetClient = new SmartsheetBuilder()
+                                                                .SetAccessToken(token.AccessToken)
+                                                                .SetDateTimeFixOptOut(true)
+                                                                .Build();
                         UnlinkSmartsheetProject(projectEntryGraph);
-                        CreateUpdateGanttProject( projectEntryGraph,  pmProjectRow, smartsheetClient,  true);
+                        CreateUpdateGanttProject(projectEntryGraph, pmProjectRow, smartsheetClient, true);
                     }
                     else
                     {
-                        WebDialogResult result = this.Base.Project.Ask(Base.Project.Current, SmartsheetConstants.Messages.CONFIRM_HEADER, SmartsheetConstants.Messages.CONFIRM_UNLINK_PROJECT, MessageButtons.YesNo, MessageIcon.Question);
-                        if (result == WebDialogResult.Yes)
-                        {
-                            UnlinkSmartsheetProject(projectEntryGraph);
-                            this.synGanttSmartsheetProject.Press();
-                        }  
-                        else
-                            UnlinkSmartsheetProject(projectEntryGraph);
-                    } 
+                        UnlinkSmartsheetProject(projectEntryGraph);
+                        throw new PXException(SmartsheetConstants.Messages.UNLINK_PROJECT);
+                    }
                 }
                 else
                 {
@@ -435,7 +442,7 @@ namespace SmartSheetIntegration
                 return null;
             }
         }
-        
+
         /// <summary>
         /// Links the Smartsheet user information to the Acumatica's Employee
         /// </summary>
@@ -453,7 +460,7 @@ namespace SmartSheetIntegration
                 foreach (EPEmployeeContract filter in projectEntryGraph.EmployeeContract.Select())
                 {
                     EPEmployee ePEmployeeRecord = employeeMaintGraph.Employee.Current = employeeMaintGraph.Employee.Search<EPEmployee.bAccountID>(filter.EmployeeID);
-                    if (ePEmployeeRecord == null ) { return; }
+                    if (ePEmployeeRecord == null) { return; }
                     EPEmployeeSSExt ePEmployeeExtRecord = PXCache<EPEmployee>.GetExtension<EPEmployeeSSExt>(ePEmployeeRecord);
                     if (String.IsNullOrEmpty(Convert.ToString(ePEmployeeExtRecord.UsrSSUserid)))
                     {
@@ -518,6 +525,31 @@ namespace SmartSheetIntegration
                 projectEntryGraph.Project.Cache.Update(pmProjectRow);
                 projectEntryGraph.Persist();
             }
+        }
+        #endregion
+
+    }
+
+    public class ProjectEntry_WorkflowSmartsheetExt : PXGraphExtension<ProjectEntry_Workflow, ProjectEntry>
+    {
+        #region Workflow - new PXActions
+        public override void Configure(PXScreenConfiguration config) => Configure(config.GetScreenConfigurationContext<ProjectEntry, PMProject>());
+
+        protected virtual void Configure(WorkflowContext<ProjectEntry, PMProject> context)
+        {
+            var synGanttSmartsheetProject = context.ActionDefinitions
+                            .CreateExisting<ProjectEntrySmartsheetExt>(g => g.synGanttSmartsheetProject, a => a
+                                .InFolder(FolderType.ActionsFolder)
+                                );
+
+            context.UpdateScreenConfigurationFor(screen =>
+            {
+                return screen
+                    .WithActions(actions =>
+                    {
+                        actions.Add(synGanttSmartsheetProject);
+                    });
+            });
         }
         #endregion
     }

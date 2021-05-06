@@ -1,5 +1,5 @@
 ﻿<Sql TableName="PMSubTask" TableSchemaXml="#CDATA">
-      <CDATA name="TableSchemaXml"><![CDATA[<table name="PMSubTask">
+    <CDATA name="TableSchemaXml"><![CDATA[<table name="PMSubTask">
 <col name="CompanyID" type="Int" default="Zero" />
 <col name="ProjectID" type="Int" />
 <col name="TaskID" type="Int" />
@@ -21,4 +21,4 @@
   <col name="SubTaskCD" />
 </index>
 </table>]]></CDATA>
-  </Sql>
+</Sql>

@@ -36,6 +36,8 @@ namespace SmartSheetIntegration
 
         #region Events
 
+        #region PMSetup
+
         protected virtual void PMSetup_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
         {
             if (e.Row == null)
@@ -70,6 +72,10 @@ namespace SmartSheetIntegration
             PXStringListAttribute.SetList<PMSetupSSExt.usrSSTemplate>(cache, pmSetup, fields.Keys.ToArray(), fields.Values.ToArray());
         }
 
+        #endregion
+
+        #region PMSMapping
+
         protected void PMSSMapping_RowInserted(PXCache cache, PXRowInsertedEventArgs e)
         {
             if (e.Row == null)
@@ -81,6 +87,10 @@ namespace SmartSheetIntegration
             PMTemplateListSS pmTemplateListSSRecord = this.TemplateSetup.Current;
             mappingRow.TemplateSS = pmTemplateListSSRecord.TemplateSS;
         }
+
+        #endregion
+
+        #region PMTemplateListSS
 
         protected virtual void PMTemplateListSS_TemplateDefault_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
         {
@@ -128,7 +138,9 @@ namespace SmartSheetIntegration
             this.Base.Setup.Update(setupRecord);
             TemplateSetup.View.RequestRefresh();
         }
-            
+
+        #endregion
+
         #endregion
 
         #region Methods
@@ -168,7 +180,10 @@ namespace SmartSheetIntegration
 
                 token.AccessToken = (String.IsNullOrEmpty(refreshedToken)) ? userRecordSSExt.UsrSmartsheetToken : refreshedToken;
 
-                SmartsheetClient smartsheetClient = new SmartsheetBuilder().SetAccessToken(token.AccessToken).Build();
+                SmartsheetClient smartsheetClient = new SmartsheetBuilder()
+                                                        .SetAccessToken(token.AccessToken)
+                                                        .SetDateTimeFixOptOut(true) //See NOTE ON 2.93.0 RELEASE on https://github.com/smartsheet-platform/smartsheet-csharp-sdk
+                                                        .Build();
 
                 if (!String.IsNullOrEmpty(pmTemplateListSSRecord.TemplateSS))
                 {
@@ -230,7 +245,10 @@ namespace SmartSheetIntegration
 
                 token.AccessToken = (String.IsNullOrEmpty(refreshedToken)) ? userRecordSSExt.UsrSmartsheetToken : refreshedToken;
 
-                SmartsheetClient smartsheetClient = new SmartsheetBuilder().SetAccessToken(token.AccessToken).Build();
+                SmartsheetClient smartsheetClient = new SmartsheetBuilder()
+                                                        .SetAccessToken(token.AccessToken)
+                                                        .SetDateTimeFixOptOut(true) //See NOTE ON 2.93.0 RELEASE on https://github.com/smartsheet-platform/smartsheet-csharp-sdk
+                                                        .Build();
                 PaginatedResult<Template> templates = smartsheetClient.TemplateResources.ListPublicTemplates(null);
                 if (templates.TotalCount > 0)
                 {

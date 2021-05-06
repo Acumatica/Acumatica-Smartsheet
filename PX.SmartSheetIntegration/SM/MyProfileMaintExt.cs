@@ -64,7 +64,7 @@ namespace SmartSheetIntegration
 
             if (currentURL.IndexOf(SmartsheetConstants.SSCodeRequest.STATE, StringComparison.CurrentCultureIgnoreCase) > 0)
             {
-                string ssCode = getSSCodeString(currentURL);
+                string ssCode = GetSSCodeString(currentURL);
 
                 if (ssCode.Trim().Length > 0)
                 {
@@ -89,7 +89,7 @@ namespace SmartSheetIntegration
         /// </summary>
         /// <param name="uRL"></param>
         /// <returns></returns>
-        private string getSSCodeString(string uRL)
+        private string GetSSCodeString(string uRL)
         {
             int codePosition = uRL.IndexOf(SmartsheetConstants.SSTokenPOSTRequest.CODE_PREFIX, StringComparison.CurrentCultureIgnoreCase);
 

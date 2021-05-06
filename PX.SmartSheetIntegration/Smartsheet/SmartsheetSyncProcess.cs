@@ -19,7 +19,7 @@ namespace SmartSheetIntegration
             delegate (ProjectEntry graph, PMProject projectRow)
             {
                 graph.Clear();
-                ProjectEntryExt projectEntryExtGraph = graph.GetExtension<ProjectEntryExt>();
+                ProjectEntrySmartsheetExt projectEntryExtGraph = graph.GetExtension<ProjectEntrySmartsheetExt>();
                 SmartsheetClient smartsheetClient = projectEntryExtGraph.CheckTokenSheetSS(graph, projectRow, "", true);
                 projectEntryExtGraph.CreateEmployeesAcuUserSS(graph, smartsheetClient);
                 projectEntryExtGraph.CreateUpdateGanttProject(graph, projectRow, smartsheetClient, true);

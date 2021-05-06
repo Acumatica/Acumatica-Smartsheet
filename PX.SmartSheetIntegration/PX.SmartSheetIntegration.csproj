@@ -50,10 +50,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Acumatica ERP\ACM2017SSR6\Bin\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Acumatica ERP\ACM2017SSR6\Bin\Owin.dll</HintPath>
@@ -61,6 +57,10 @@
     <Reference Include="PX.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Acumatica ERP\ACM2017SSR6\Bin\PX.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PX.Common.Std, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Bin\PX.Common.Std.dll</HintPath>
     </Reference>
     <Reference Include="PX.CS.Contracts">
       <HintPath>..\..\..\..\Bin\PX.CS.Contracts.dll</HintPath>
@@ -84,12 +84,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Acumatica ERP\ACM2017SSR6\Bin\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="smartsheet-csharp-sdk, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="smartsheet-csharp-sdk, Version=2.101.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\References\smartsheet-csharp-sdk.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -108,7 +109,7 @@
     <Compile Include="PM\DAC\PMSubTask.cs" />
     <Compile Include="PM\DAC\PMTaskSSExt.cs" />
     <Compile Include="PM\DAC\PMTemplateListSS.cs" />
-    <Compile Include="PM\ProjectEntryExt.cs" />
+    <Compile Include="PM\ProjectEntrySmartsheetExt.cs" />
     <Compile Include="PM\SetupMaintExt.cs" />
     <Compile Include="PM\TemplateTaskMaintExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

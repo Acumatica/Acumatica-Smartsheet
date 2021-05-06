@@ -3,6 +3,7 @@ using PX.Data;
 
 namespace SmartSheetIntegration
 {
+    //Smartsheet users Master table
     [System.SerializableAttribute()]
     [PXCacheName(SmartsheetConstants.TableNames.EPUSERSLISTSS)]
     public class EPUsersListSS : IBqlTable

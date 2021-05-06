@@ -2,7 +2,7 @@
 <%@ MasterType VirtualPath="~/MasterPages/ListView.master" %>
 
 <asp:Content ID="cont1" ContentPlaceHolderID="phDS" runat="Server">
-	<px:PXDataSource ID="ds" runat="server" Visible="True" Width="100%" PrimaryView="Projects" TypeName="PX.SmartSheetIntegration.SmartsheetSyncProcess" >
+	<px:PXDataSource ID="ds" runat="server" Visible="True" Width="100%" PrimaryView="Projects" TypeName="SmartSheetIntegration.SmartsheetSyncProcess" >
 	</px:PXDataSource>
 </asp:Content>
 <asp:Content ID="cont2" ContentPlaceHolderID="phL" runat="Server">

@@ -25,11 +25,14 @@ namespace SmartSheetIntegration
 
         #region Methods
         /// <summary>
-        /// Creates or updates users obtained from SmartSheet in Acumatica
+        /// Creates or updates the smartsheet users listed in "EPUsersListSS" master table
         /// </summary>
         /// <param name="refreshedToken"></param>
         public void GetUsersSS(string refreshedToken = "")
         {
+            //The smartsheet account should support the UserResources.ListUsers() functionality
+            //Otherwise the message "The operation you are attempting to perform is not supported by your plan." is received
+
             // User connection with SmartSheet
             Users userRecord = PXSelect<
                 Users,
@@ -48,7 +51,11 @@ namespace SmartSheetIntegration
 
                 token.AccessToken = (String.IsNullOrEmpty(refreshedToken)) ? userRecordSSExt.UsrSmartsheetToken : refreshedToken;
 
-                SmartsheetClient smartsheetClient = new SmartsheetBuilder().SetAccessToken(token.AccessToken).Build();
+                SmartsheetClient smartsheetClient = new SmartsheetBuilder()
+                                                        .SetAccessToken(token.AccessToken)
+                                                        .SetDateTimeFixOptOut(true) //See NOTE ON 2.93.0 RELEASE on https://github.com/smartsheet-platform/smartsheet-csharp-sdk
+                                                        .Build();
+
                 PaginatedResult<User> smartsheetUserSet = smartsheetClient.UserResources.ListUsers(null, null);
                 if (smartsheetUserSet.TotalCount > 0)
                 {
@@ -118,6 +125,7 @@ namespace SmartSheetIntegration
                 EPUsersListSS epUsersListSSRow = UserList.Select().Where(x => ((EPUsersListSS)x).Ssuserid == (long?)e.OldValue).FirstOrDefault();
                 if (epUsersListSSRow != null)
                 {
+                    //Old value is unlinked from the employee record
                     epUsersListSSRow.BAccountID = null;
                     usersListCache.Update(epUsersListSSRow);
                 }
@@ -127,6 +135,7 @@ namespace SmartSheetIntegration
                     epUsersListSSRow = UserList.Select().Where(x => ((EPUsersListSS)x).Ssuserid == epEmployeeExtRow.UsrSSUserid).FirstOrDefault();
                     if (epUsersListSSRow != null)
                     {
+                        //New value is linked to the employee record
                         epUsersListSSRow.BAccountID = epEmployeeRow.BAccountID;
                         usersListCache.Update(epUsersListSSRow);
                     }

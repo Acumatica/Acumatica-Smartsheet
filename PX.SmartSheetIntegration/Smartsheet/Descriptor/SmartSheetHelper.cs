@@ -103,6 +103,7 @@ namespace SmartSheetIntegration
             int ssTaskIDPosition = 0;
             if (ssRows.Count > 0 && ssRows[0].Cells != null)
             {
+                //"TaskCD" is the linking element between the Acumatica Project's Tasks and the cell being used as the "Task" equivalent in the mapping definition
                 PMSSMapping mappingSS = templateMappingSet.Where(t => ((PMSSMapping)t).NameAcu.Trim().ToUpper() == SmartsheetConstants.ColumnMapping.TASKS_CD.Trim().ToUpper()).FirstOrDefault();
 
                 ssTaskIDPosition = smartSheetHelperObject.GetSSTaskPosition(ssRows[0].Cells, columnMap[mappingSS.NameSS]);
@@ -308,7 +309,7 @@ namespace SmartSheetIntegration
             Cell currentCell;
 
             ProjectEntry copyProjectEntryGraph = projectEntryGraph;
-            ProjectEntryExt graphExtended = copyProjectEntryGraph.GetExtension<ProjectEntryExt>();
+            ProjectEntrySmartsheetExt graphExtended = copyProjectEntryGraph.GetExtension<ProjectEntrySmartsheetExt>();
 
             if (taskRow != null)
             {
@@ -442,7 +443,7 @@ namespace SmartSheetIntegration
 
                                     PMTaskSSExt pmTaskExtRow = PXCache<PMTask>.GetExtension<PMTaskSSExt>(pmTaskNewEntry);
                                     pmTaskExtRow.UsrSmartsheetTaskID = updatedSSRow.Id;
-                                    //Insert() has to be invoked at the end as the order in which the values are assigned to the object depend on the iteration
+                                    //Insert() has to be invoked at the end as the order in which the values are assigned to the object depends on the iteration
                                     pmTaskNewEntry = projectEntryGraph.Tasks.Insert(pmTaskNewEntry);
                                 }
                             }

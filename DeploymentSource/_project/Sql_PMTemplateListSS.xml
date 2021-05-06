@@ -1,4 +1,4 @@
-<Sql TableName="PMTemplateListSS" TableSchemaXml="#CDATA">
+﻿<Sql TableName="PMTemplateListSS" TableSchemaXml="#CDATA">
     <CDATA name="TableSchemaXml"><![CDATA[<table name="PMTemplateListSS">
 <col name="CompanyID" type="Int" default="Zero" />
 <col name="TemplateSS" type="NVarChar(20)" />

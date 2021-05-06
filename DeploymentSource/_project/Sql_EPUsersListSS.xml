@@ -1,4 +1,4 @@
-<Sql TableName="EPUsersListSS" TableSchemaXml="#CDATA">
+﻿<Sql TableName="EPUsersListSS" TableSchemaXml="#CDATA">
     <CDATA name="TableSchemaXml"><![CDATA[<table name="EPUsersListSS">
 <col name="CompanyID" type="Int" default="Zero" />
 <col name="SSUserID" type="BigInt" />
