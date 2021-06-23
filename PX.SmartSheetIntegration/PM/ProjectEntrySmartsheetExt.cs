@@ -332,10 +332,6 @@ namespace SmartSheetIntegration
                     columnPosition += 1;
                 }
 
-                projectEntryGraph.Actions.PressSave();
-                //Cache is cleared to avoid "Another process has updated PMTask" error.
-                projectEntryGraph.Actions.PressCancel();
-
                 smartSheetHelperObject.UpdateAcumaticaTasks(projectEntryGraph, pmProjectRow, pmSetupSSExt, updatedSheet, columnPositionMap, templateMappingSet);
 
                 projectEntryGraph.Actions.PressSave();

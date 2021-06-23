@@ -58,16 +58,9 @@
                 <PXGridColumn TypeFullName="PX.Web.UI.PXGridColumn">
                     <Prop Key="DataField" Value="Duration" />
                     <Prop Key="Width" Value="70" />
-                    <Prop Key="CommitChanges" Value="True" />
                 </PXGridColumn>
             </AddItem>
             <PXGridColumn DataField="ApproverID" OriginalIndex="10" />
         </Children>
     </PXGridLevel>
-    <PXGridColumn DataField="EndDate" ParentId="phG_tab_Items#1_TaskGrid_Levels#0_Columns#9" TypeFullName="PX.Web.UI.PXGridColumn">
-        <Prop Key="CommitChanges" Value="True" />
-    </PXGridColumn>
-    <PXGridColumn DataField="StartDate" ParentId="phG_tab_Items#1_TaskGrid_Levels#0_Columns#8" TypeFullName="PX.Web.UI.PXGridColumn">
-        <Prop Key="CommitChanges" Value="True" />
-    </PXGridColumn>
 </Page>
