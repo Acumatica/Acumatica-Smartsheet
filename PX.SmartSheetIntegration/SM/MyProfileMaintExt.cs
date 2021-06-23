@@ -20,6 +20,21 @@ namespace SmartSheetIntegration
         [InjectDependency]
         private IConnectionManager _signalRConnectionManager { get; set; }
 
+        #region Events
+        protected virtual void Users_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
+        {
+            if (e.Row == null)
+            {
+                return;
+            }
+
+            Users userRow = e.Row as Users;
+            UsersSSExt userExtRow = PXCache<Users>.GetExtension<UsersSSExt>(userRow);
+
+            refreshSSToken.SetEnabled(userExtRow != null && userExtRow.UsrSmartSheetStatus == SmartsheetConstants.Messages.SS_CONNECTED);
+        }
+        #endregion
+
         #region Actions
 
         public PXAction<Users> requestSSToken;
@@ -44,6 +59,15 @@ namespace SmartSheetIntegration
             }
             else
                 throw new PXException(SmartsheetConstants.Messages.SMARTSHEET_ID_MISSING);
+        }
+
+        public PXAction<Users> refreshSSToken;
+        [PXButton(CommitChanges = true)]
+        [PXUIField(DisplayName = SmartsheetConstants.ActionsNames.REFRESH_SS_TOKEN, MapViewRights = PXCacheRights.Update, MapEnableRights = PXCacheRights.Update)]
+        protected virtual void RefreshSSToken()
+        {
+            MyProfileMaintExt graphExtended = Base.GetExtension<MyProfileMaintExt>();
+            graphExtended.RefreshSmartsheetToken();
         }
         #endregion
 

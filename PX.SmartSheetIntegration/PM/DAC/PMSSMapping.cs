@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using PX.Data;
-using PX.Objects.PM;
-using System.Linq;
-using static SmartSheetIntegration.PMSSMapping.nameAcu;
 
 namespace SmartSheetIntegration
 {
@@ -37,65 +33,6 @@ namespace SmartSheetIntegration
         #region NameAcu
         public abstract class nameAcu : PX.Data.BQL.BqlString.Field<nameAcu>
         {
-            #region List
-            public class ListPMTaskAttribute : PXStringListAttribute
-            {
-                private static string[] ignoredFields = new[]
-                {
-                    "NoteID",
-                    "CreatedByID",
-                    "CreatedByScreenID",
-                    "CreatedDateTime",
-                    "LastModifiedByID",
-                    "LastModifiedByScreenID",
-                    "LastModifiedDateTime",
-                    "tstamp",
-                    "VisibleInSO",
-                    "VisibleInPO",
-                    "VisibleInIN",
-                    "VisibleInGL",
-                    "VisibleInEA",
-                    "VisibleInCR",
-                    "VisibleInCA",
-                    "VisibleInAR",
-                    "VisibleInAP",
-                    "WipAccountGroupID",
-                    "Selected",
-                    "IsDefault",
-                    "TaskID",
-                    "AutoIncludeInPrj",
-                    "CompletedPctMethod"
-                };
-
-                private static readonly string[] _values;
-                private static readonly string[] _labels;
-
-                static ListPMTaskAttribute()
-                {
-                    var values = new List<string>() {" "};
-                    var labels = new List<string>() {" "};
-
-                    var type = typeof(PMTask);
-                    ProjectEntry projectEntryGraph = PXGraph.CreateInstance<ProjectEntry>();
-                    foreach (var field in projectEntryGraph.GetFieldNames(SmartsheetConstants.ViewName.TASK))
-                    {
-                        if (ignoredFields.Any(fieldName => field.Contains(fieldName) || field.Contains("_") || field.Contains("Note")))
-                            continue;
-                        if (!values.Contains(field))
-                        {
-                            PXFieldState fs = projectEntryGraph.Caches[type].GetStateExt(null, field) as PXFieldState;
-                            values.Add(field);
-                            labels.Add(fs != null ? fs.DisplayName : field);
-                        }
-                    }
-                    _values = values.ToArray();
-                    _labels = labels.ToArray();
-                }
-                public ListPMTaskAttribute()
-                            : base(_values, _labels) { }
-            }
-            #endregion
-
         }        
         [PXDBString(255, IsUnicode = true)]
         [ListPMTask]

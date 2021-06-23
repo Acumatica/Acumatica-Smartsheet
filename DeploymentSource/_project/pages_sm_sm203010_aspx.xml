@@ -24,6 +24,17 @@
                 </PXButton>
             </AddItem>
             <AddItem>
+                <PXButton TypeFullName="PX.Web.UI.PXButton">
+                    <Prop Key="Virtual:ApplyStylesheetSkin" />
+                    <Prop Key="ID" Value="CstSSButtonRefresh" />
+                    <Prop Key="Text" Value="Refresh Smartsheet Token" />
+                    <Prop Key="AlignLeft" Value="True" />
+                    <Prop Key="CommandSourceID" Value="ds" />
+                    <Prop Key="CommandName" Value="RefreshSSToken" />
+                    <Prop Key="Width" Value="215px" />
+                </PXButton>
+            </AddItem>
+            <AddItem>
                 <PXTextEdit TypeFullName="PX.Web.UI.PXTextEdit">
                     <Prop Key="Virtual:ApplyStylesheetSkin" />
                     <Prop Key="ID" Value="CstPXTextEdit3" />
@@ -40,6 +51,13 @@
                     <Prop Key="CommitChanges" Value="True" />
                     <Prop Key="Name" Value="RequestSSToken" />
                     <Prop Key="Visible" Value="false" />
+                </PXDSCallbackCommand>
+            </AddItem>
+            <AddItem>
+                <PXDSCallbackCommand TypeFullName="PX.Web.UI.PXDSCallbackCommand">
+                    <Prop Key="Name" Value="RefreshSSToken" />
+                    <Prop Key="Visible" Value="false" />
+                    <Prop Key="CommitChanges" Value="True" />
                 </PXDSCallbackCommand>
             </AddItem>
         </Children>

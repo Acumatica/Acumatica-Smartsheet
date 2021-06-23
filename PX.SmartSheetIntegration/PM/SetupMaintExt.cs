@@ -250,6 +250,7 @@ namespace SmartSheetIntegration
                                                         .SetDateTimeFixOptOut(true) //See NOTE ON 2.93.0 RELEASE on https://github.com/smartsheet-platform/smartsheet-csharp-sdk
                                                         .Build();
                 PaginatedResult<Template> templates = smartsheetClient.TemplateResources.ListPublicTemplates(null);
+                PaginatedResult<Template> userTemplates = smartsheetClient.TemplateResources.ListUserCreatedTemplates(null);
                 if (templates.TotalCount > 0)
                 {
                     foreach (Template dataTemplate in templates.Data)
@@ -257,6 +258,14 @@ namespace SmartSheetIntegration
                         templateSS.Add(dataTemplate.Id.ToString(), dataTemplate.Name);
                     }
                 }
+                if (userTemplates.TotalCount > 0)
+                {
+                    foreach (Template userTemplate in userTemplates.Data)
+                    {
+                        templateSS.Add(userTemplate.Id.ToString(), userTemplate.Name);
+                    }
+                }
+
                 return templateSS;
             }
             catch (Exception e)
