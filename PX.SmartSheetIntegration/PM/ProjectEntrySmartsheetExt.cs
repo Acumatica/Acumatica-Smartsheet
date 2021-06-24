@@ -1,5 +1,4 @@
 using PX.Data;
-using PX.Data.WorkflowAPI;
 using PX.Objects.EP;
 using PX.Objects.PM;
 using PX.SM;
@@ -15,6 +14,12 @@ namespace SmartSheetIntegration
 {
     public class ProjectEntrySmartsheetExt : PXGraphExtension<ProjectEntry>
     {
+        public override void Initialize()
+        {
+            base.Initialize();
+            this.Base.action.AddMenuAction(synGanttSmartsheetProject);
+        }
+
         #region DataMembers
         public PXSelect<EPUsersListSS> UserSSList;
 
@@ -524,29 +529,5 @@ namespace SmartSheetIntegration
         }
         #endregion
 
-    }
-
-    public class ProjectEntry_WorkflowSmartsheetExt : PXGraphExtension<ProjectEntry_Workflow, ProjectEntry>
-    {
-        #region Workflow - new PXActions
-        public override void Configure(PXScreenConfiguration config) => Configure(config.GetScreenConfigurationContext<ProjectEntry, PMProject>());
-
-        protected virtual void Configure(WorkflowContext<ProjectEntry, PMProject> context)
-        {
-            var synGanttSmartsheetProject = context.ActionDefinitions
-                            .CreateExisting<ProjectEntrySmartsheetExt>(g => g.synGanttSmartsheetProject, a => a
-                                .InFolder(FolderType.ActionsFolder)
-                                );
-
-            context.UpdateScreenConfigurationFor(screen =>
-            {
-                return screen
-                    .WithActions(actions =>
-                    {
-                        actions.Add(synGanttSmartsheetProject);
-                    });
-            });
-        }
-        #endregion
     }
 }
