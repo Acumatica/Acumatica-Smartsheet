@@ -249,8 +249,11 @@ namespace SmartSheetIntegration
                                                         .SetAccessToken(token.AccessToken)
                                                         .SetDateTimeFixOptOut(true) //See NOTE ON 2.93.0 RELEASE on https://github.com/smartsheet-platform/smartsheet-csharp-sdk
                                                         .Build();
-                PaginatedResult<Template> templates = smartsheetClient.TemplateResources.ListPublicTemplates(null);
-                PaginatedResult<Template> userTemplates = smartsheetClient.TemplateResources.ListUserCreatedTemplates(null);
+                
+                PaginationParameters paginationParams = new PaginationParameters(true, null, null); //includeAll = true ==> Ignoring paging and size if defined
+                PaginatedResult<Template> templates = smartsheetClient.TemplateResources.ListPublicTemplates(paginationParams);
+                PaginatedResult<Template> userTemplates = smartsheetClient.TemplateResources.ListUserCreatedTemplates(paginationParams);
+
                 if (templates.TotalCount > 0)
                 {
                     foreach (Template dataTemplate in templates.Data)
