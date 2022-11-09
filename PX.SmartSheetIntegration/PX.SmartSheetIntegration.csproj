@@ -67,7 +67,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Bin\PX.Common.Std.dll</HintPath>
     </Reference>
-    <Reference Include="PX.CS.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="PX.CS.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Bin\PX.CS.Contracts.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="PX.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Bin\PX.Data.dll</HintPath>

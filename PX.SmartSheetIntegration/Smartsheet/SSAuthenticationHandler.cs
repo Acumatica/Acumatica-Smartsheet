@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.SessionState;
@@ -11,11 +12,11 @@ using PX.SM;
 
 namespace SmartSheetIntegration
 {
-    public class SSAuthenticationHandler : IConditionalOwinConfigurationPart, ISessionDependentOwinConfigurationPart
+    public class SSAuthenticationHandler : IOwinEndpointByPrefix
     {
         public const string Prefix = "OAuthAuthenticationHandlerSS";
         private static readonly PathString PathPrefix = new PathString($"/{Prefix}");
-
+        string IOwinEndpointByPrefix.Prefix => $"/{Prefix}";
         public static string ReturnUrl
         {
             get
@@ -28,6 +29,7 @@ namespace SmartSheetIntegration
             }
         }
 
+        public IReadOnlyCollection<object> Metadata => null;
         public void Configure(IAppBuilder app)
         {
             app.Run(ProcessAuthorizationCode);
