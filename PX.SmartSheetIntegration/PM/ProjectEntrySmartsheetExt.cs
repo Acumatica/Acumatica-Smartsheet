@@ -533,9 +533,12 @@ namespace SmartSheetIntegration
 
         protected virtual void Configure(WorkflowContext<ProjectEntry, PMProject> context)
         {
+            var processingCategory = context.Categories.CreateNew(ToolbarCategory.ActionCategoryNames.Processing,
+                category => category.DisplayName(ToolbarCategory.ActionCategory.Processing));
+
             var synGanttSmartsheetProject = context.ActionDefinitions
-                            .CreateExisting<ProjectEntrySmartsheetExt>(g => g.synGanttSmartsheetProject, a => a
-                                .InFolder(FolderType.ActionsFolder)
+                            .CreateExisting<ProjectEntrySmartsheetExt>(g => g.synGanttSmartsheetProject, 
+                                                                        a => a.WithCategory(processingCategory)
                                 );
 
             context.UpdateScreenConfigurationFor(screen =>

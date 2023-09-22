@@ -10,16 +10,11 @@ using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using PX.Data.DependencyInjection;
-using Microsoft.AspNet.SignalR.Infrastructure;
-using PX.OAuthClient.Hubs;
 
 namespace SmartSheetIntegration
 {
     public class MyProfileMaintExt : PXGraphExtension<MyProfileMaint>, IGraphWithInitialization
-    {
-        [InjectDependency]
-        private IConnectionManager _signalRConnectionManager { get; set; }
-
+    {   
         #region Events
         protected virtual void Users_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
         {
@@ -103,7 +98,6 @@ namespace SmartSheetIntegration
                     }
                 }
             }
-            SendRefreshCall();
 
             return;
         }
@@ -295,11 +289,5 @@ namespace SmartSheetIntegration
             return Sb.ToString();
         }
         #endregion
-
-        private void SendRefreshCall()
-        {
-            var hubContext = _signalRConnectionManager.GetHubContext<RefreshHub>();
-            hubContext.Clients.All.RefreshPage();
-        }
     }
 }
