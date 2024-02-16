@@ -1,7 +1,13 @@
-[![Project Status](http://opensource.box.com/badges/active.svg)](http://opensource.box.com/badges)
+[![Project Status](http://opensource.box.com/badges/inactive.svg)](http://opensource.box.com/badges)
 
 Smartsheet and Acumatica Cloud ERP Integration
 ==================================
+
+# 🚫 This repository has been archived 
+As of 2023 R2, Acumatica discontinued maintenance of the SmartSheet integration (announcement [here](https://community.acumatica.com/acumatica-news-updates-2/smartsheet-2023-r1-and-2023-r2-compatibility-upgrade-and-deprecation-notice-19996?tid=19996&fid=2)). As a result, this integration is no longer officially sold or supported by Acumatica. The source code is available here on GitHub for partners or customers who are interested in expanding the integration for their own use cases. For assistance, partners or customers may contact [Skyknack](mailto:info@skyknack.com) to customize or upgrade to be compatible with future Acumatica versions.
+
+- - - -
+
 
 Smartsheet is a modern SaaS visual project scheduling tool for tasks and resources that’s integrated with Acumatica Project Accounting to make any project professional’s job easier. Field supervisors and project managers can use Smartsheet to reschedule tasks and resources quickly and easily. Scheduled changes are sent back to Acumatica to update Project Accounting. Users who perform back-office business processes such as project costing, purchasing, and expense processing can do so in Acumatica.
 
